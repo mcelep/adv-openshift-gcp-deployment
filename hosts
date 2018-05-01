@@ -1,0 +1,61 @@
+[OSEv3:vars]
+
+###########################################################################
+### Ansible Vars
+###########################################################################
+timeout=60
+ansible_become=yes
+ansible_ssh_user=ec2-user
+#Disable host checking
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+
+# disable memory check, as we are not a production environment
+openshift_disable_check="memory_availability"
+# General
+deployment_type=openshift-enterprise
+containerized=false
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=loadbalancer1
+openshift_master_cluster_public_hostname=loadbalancer.2637.example.opentlc.com
+openshift_master_default_subdomain=apps.2637.example.opentlc.com
+openshift_hosted_infra_selector="env=infra"
+openshift_router_selector="env=infra"
+openshift_registry_selector="env=infra"
+osm_default_node_selector="env=app"
+
+#Network
+os_sdn_network_plugin_name=redhat/openshift-ovs-multitenant
+
+# Project request message
+osm_project_request_message='Contact your cluster admin for creating a new project'
+
+[OSEv3:children]
+masters
+etcd
+nodes
+
+[masters]
+master1
+#master2 
+#master3 
+
+[etcd]
+master1 
+#master2 
+#master3
+
+[nodes]
+## These are the masters
+master1 openshift_hostname=master1  openshift_node_labels="{'logging':'true','openshift_schedulable':'False','cluster': '2637'}"
+#master2 openshift_hostname=master2  openshift_node_labels="{'logging':'true','openshift_schedulable':'False','cluster': '2637'}"
+#master3 openshift_hostname=master3  openshift_node_labels="{'logging':'true','openshift_schedulable':'False','cluster': '2637'}"
+
+## These are infranodes
+infra1 openshift_hostname=infra1  openshift_node_labels="{'logging':'true','cluster': '2637', 'env':'infra'}"
+#infra2 openshift_hostname=infra2  openshift_node_labels="{'logging':'true','cluster': '2637', 'env':'infra'}"
+
+## These are regular nodes
+#node2 openshift_hostname=node2  openshift_node_labels="{'logging':'true','cluster': '2637', 'env':'app'}"
+#node3 openshift_hostname=node3  openshift_node_labels="{'logging':'true','cluster': '2637', 'env':'app'}"
+node1 openshift_hostname=node1  openshift_node_labels="{'logging':'true','cluster': '2637', 'env':'app'}"

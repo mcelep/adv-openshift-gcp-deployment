@@ -1,0 +1,215 @@
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '22'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: external-ssh
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceRanges:
+- 0.0.0.0/0
+targetTags:
+- external-ssh
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '443'
+- IPProtocol: tcp
+  ports:
+  - '8443'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: external-to-master
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceRanges:
+- 0.0.0.0/0
+targetTags:
+- master
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '53'
+- IPProtocol: udp
+  ports:
+  - '53'
+- IPProtocol: tcp
+  ports:
+  - '8053'
+- IPProtocol: udp
+  ports:
+  - '8053'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: master-dns
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceRanges:
+- 10.0.5.0/24
+targetTags:
+- master
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '53'
+- IPProtocol: udp
+  ports:
+  - '53'
+- IPProtocol: tcp
+  ports:
+  - '8053'
+- IPProtocol: udp
+  ports:
+  - '8053'
+- IPProtocol: tcp
+  ports:
+  - '2049'
+- IPProtocol: udp
+  ports:
+  - '2049'
+- IPProtocol: tcp
+  ports:
+  - '2379'
+- IPProtocol: tcp
+  ports:
+  - '2380'
+- IPProtocol: udp
+  ports:
+  - '4789'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: master-to-master
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceTags:
+- master
+targetTags:
+- master
+---
+allowed:
+- IPProtocol: all
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: master-to-node
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceTags:
+- master
+targetTags:
+- node
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '53'
+- IPProtocol: udp
+  ports:
+  - '53'
+- IPProtocol: tcp
+  ports:
+  - '8053'
+- IPProtocol: udp
+  ports:
+  - '8053'
+- IPProtocol: udp
+  ports:
+  - '4789'
+- IPProtocol: tcp
+  ports:
+  - '443'
+- IPProtocol: tcp
+  ports:
+  - '8443'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: node-to-master
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceTags:
+- node
+targetTags:
+- master
+---
+allowed:
+- IPProtocol: udp
+  ports:
+  - '4789'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: node-to-node
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceTags:
+- node
+targetTags:
+- node
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '80'
+- IPProtocol: tcp
+  ports:
+  - '443'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: router
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceRanges:
+- 0.0.0.0/0
+targetTags:
+- router
+---
+allowed:
+- IPProtocol: tcp
+  ports:
+  - '22'
+
+description: ''
+direction: INGRESS
+
+kind: compute#firewall
+name: ssh-internal
+network: https://www.googleapis.com/compute/v1/projects/openshift-201311/global/networks/openshift
+priority: 1000
+
+sourceRanges:
+- 10.0.5.0/24
