@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.14.1">
+  <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
@@ -14,8 +15,42 @@
     </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.42">
-    <script>node {
-   echo &apos;Hello World&apos;
+    <script>node(&apos;maven&apos;) {
+    def IMAGE_NAME=&apos;openshift-tasks&apos;    
+    def PROJECT = &apos;o-tasks&apos;
+   stage(&apos;checkout source code&apos;){
+       git &apos;https://github.com/OpenShiftDemos/openshift-tasks&apos;
+   }
+   stage(&apos;build application&apos;){
+        sh &quot;mvn -DskipTests=true clean install&quot;   
+   }    
+   stage(&apos;unit test&apos;){
+       sh &apos;mvn test&apos;
+   }
+   
+   stage(&apos;deploy&apos;){
+      def ret = sh(script: &quot;oc get bc/${IMAGE_NAME} --ignore-not-found -o name -n ${PROJECT}&quot;, returnStdout: true)
+
+        if(!ret){
+            sh &quot;oc new-build jboss-eap70-openshift:1.6 --binary=true --name ${IMAGE_NAME} --strategy=source -n ${PROJECT}&quot;
+        }
+        sh &quot;oc start-build ${IMAGE_NAME} -n ${PROJECT} --from-file=target/openshift-tasks.war --follow --wait&quot;
+        
+        // Verify build
+        openshiftVerifyBuild bldCfg: IMAGE_NAME, checkForTriggeredDeployments: &apos;false&apos;, namespace: PROJECT, verbose: &apos;false&apos;, waitTime: &apos;&apos;
+
+        ret = sh(script: &quot;oc get dc/${IMAGE_NAME} --ignore-not-found -o name -n ${PROJECT}&quot;, returnStdout: true)
+        if(!ret){
+            sh &quot;oc new-app ${IMAGE_NAME} -n ${PROJECT}&quot;
+        }
+        
+        ret = sh(script: &quot;oc get route/${IMAGE_NAME} --ignore-not-found -o name -n ${PROJECT}&quot;, returnStdout: true)
+        if(!ret){
+            sh &quot;oc expose service ${IMAGE_NAME} -n ${PROJECT}&quot;
+        }
+   }
+   
+   
 }</script>
     <sandbox>true</sandbox>
   </definition>
